@@ -21,9 +21,6 @@ class MainScene extends Phaser.Scene {
     // --- 背景 ---
     this.add.rectangle(400, 300, 800, 600, 0xf6f1e1);
 
-    // // --- 猫(用圆形代替) ---
-    // this.cat = this.add.circle(400, 260, 60, 0xffccaa).setStrokeStyle(4, 0x333333);
-    // this.catText = this.add.text(360, 240, "CAT", { fontSize: "24px", color: "#333" });
 
     // --- 猫(使用图片) ---
     this.cat = this.add.image(400, 260, "cat"); 
@@ -74,15 +71,45 @@ class MainScene extends Phaser.Scene {
     this.flashMessage(`第 ${this.state.day} 天开始！(roll=${roll}, chance=${chance}%)`);
   }
 
+  // petCat() {
+  //   // 摸猫：亲近小幅上升；如果太饿，效果变差
+  //   const delta = this.state.hunger >= 80 ? 2 : 6;
+  //   this.state.bond = Math.min(100, this.state.bond + delta);
+  //   this.cat.scale = 1.05;
+  //   this.time.delayedCall(120, () => (this.cat.scale = 1));
+  //   this.renderUI();
+  //   this.flashMessage(`你摸了摸猫，亲近 +${delta}`);
+  // }
+
+  // 摸猫：亲近小幅上升；如果太饿，效果变差
   petCat() {
-    // 摸猫：亲近小幅上升；如果太饿，效果变差
     const delta = this.state.hunger >= 80 ? 2 : 6;
     this.state.bond = Math.min(100, this.state.bond + delta);
-    this.cat.scale = 1.05;
-    this.time.delayedCall(120, () => (this.cat.scale = 1));
+    
+    // 摸猫动画：左右摇摆
+    // this.tweens.add({
+    //   targets: this.cat,
+    //   scale: 0.45,
+    //   duration: 120,
+    //   yoyo: true,
+    //   ease: "Back.easeOut"
+    // });
+
+    // 摸猫动画：position wiggle
+    this.tweens.add({
+      targets: this.cat,
+      x: this.cat.x + 8,
+      duration: 80,
+      yoyo: true,
+      repeat: 2,
+      ease: "Sine.easeInOut"
+    });
+    
+
     this.renderUI();
     this.flashMessage(`你摸了摸猫，亲近 +${delta}`);
   }
+  
 
   feedCat() {
     // 喂猫：降低饥饿，亲近小幅上升
