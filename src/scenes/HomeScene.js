@@ -29,7 +29,10 @@ export default class HomeScene extends Phaser.Scene {
 
     // 猫咪状态机
     this.cat = this.add.image(500, 400, "cat_idle").setScale(0.29);
-    this.catState = new CatStateMachine(this.cat);
+    this.catState = new CatStateMachine(this.cat, () => {
+      console.log("[HomeScene] Game over callback triggered!");
+      this.handleGameOver();
+    });
 
     // 背景音乐
     this.bgm = this.sound.add("bgm", { loop: true, volume: 0.4 });
@@ -64,18 +67,23 @@ export default class HomeScene extends Phaser.Scene {
     // 循环状态更新
     this.time.addEvent({
       delay: 1000 * 60,
-      callback: () => this.catState.update(),
+      callback: () => {
+        console.log("[HomeScene] ⏰ Timer triggered - Running catState.update()");
+        this.catState.update();
+      },
       loop: true,
     });
   }
 
   petCat() {
+    console.log("[HomeScene] Player pet the cat");
     this.sound.play("pet_sfx", { volume: 0.6 });
     this.catState.pet();
     this.flashMessage("你摸了摸猫，猫很开心 😺");
   }
 
   feedCat() {
+    console.log("[HomeScene] Player fed the cat");
     const food = this.add.image(400, 500, "food").setScale(0.25);
     this.sound.play("eat_sfx", { volume: 0.6 });
 
@@ -116,6 +124,36 @@ export default class HomeScene extends Phaser.Scene {
       duration: 1500,
       delay: 500,
       onComplete: () => msg.destroy(),
+    });
+  }
+
+  handleGameOver() {
+    console.log("[HomeScene] 🎮 GAME OVER - Starting game over sequence");
+    
+    // Stop background music
+    this.bgm.stop();
+    console.log("[HomeScene] Background music stopped");
+    
+    // Show game over message
+    this.flashMessage("猫咪离开了... 游戏结束 😿");
+    
+    // Fade out the cat
+    this.tweens.add({
+      targets: this.cat,
+      alpha: 0,
+      duration: 2000,
+      ease: "Power2",
+    });
+    console.log("[HomeScene] Cat fade out animation started");
+    
+    // Disable further interactions
+    this.input.off("pointerdown");
+    console.log("[HomeScene] Input disabled");
+    
+    // Optional: restart the game after a delay
+    this.time.delayedCall(3000, () => {
+      console.log("[HomeScene] Restarting scene...");
+      this.scene.restart();
     });
   }
 }
