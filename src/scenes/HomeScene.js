@@ -12,7 +12,7 @@ export default class HomeScene extends Phaser.Scene {
     this.load.image("cat_idle", "/assets/cat/cat_idle.png");
     this.load.image("cat_hungry", "/assets/cat/cat_hungry.png");
     this.load.image("cat_sleeping", "/assets/cat/cat_sleeping.png");
-    this.load.image("food", "/assets/fish.png");
+    this.load.image("food", "/assets/cat/fish.png");
 
     // 背景
     this.load.image("room", "/assets/bg/room.png");

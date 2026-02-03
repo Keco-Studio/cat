@@ -75,8 +75,8 @@ export default class CatStateMachine {
     updateSprite() {
       switch (this.state) {
         case "strange": this.cat.setTexture("cat_idle"); break;
-        case "familiar": this.cat.setTexture("cat_hungry"); break;
-        case "trust": this.cat.setTexture("cat_sleeping"); break;
+        case "familiar": this.cat.setTexture("cat_idle"); break;
+        case "trust": this.cat.setTexture("cat_idle"); break;
         case "deeply_bonded": this.cat.setVisible(false); break;
       }
       if (this.state !== "away") this.cat.setVisible(true);
