@@ -1,0 +1,58 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: keco-studio/cat
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to ghcr.io
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  update-gitops:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout cat-gitops
+        uses: actions/checkout@v4
+        with:
+          repository: Keco-Studio/cat-gitops
+          token: ${{ secrets.GITOPS_TOKEN }}
+
+      - name: Update image tag
+        run: |
+          sed -i "s|image: ghcr.io/keco-studio/cat:.*|image: ghcr.io/keco-studio/cat:${{ github.sha }}|" \
+            apps/cat-game/deployment.yaml
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apps/cat-game/deployment.yaml
+          git commit -m "chore: deploy cat-game ${{ github.sha }}"
+          git push
