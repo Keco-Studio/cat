@@ -64,6 +64,14 @@ export default class HomeScene extends Phaser.Scene {
       ease: "Sine.easeInOut",
     });
 
+    // lower-left logo
+    this.add.text(12, 572, "🐱 Cat", {
+      fontSize: "16px",
+      color: "#ffffff",
+      backgroundColor: "#0006",
+      padding: { x: 6, y: 3 },
+    }).setDepth(10).setOrigin(0, 1);
+
     // 循环状态更新
     this.time.addEvent({
       delay: 1000 * 60,
